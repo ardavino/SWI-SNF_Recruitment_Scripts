@@ -1,0 +1,21 @@
+#!/bin/bash
+genome_files=path to bowtie2 human genome index files (hg19 used in this study)
+fly_genome=path to bowtie2 fly genome index files (dm3 used in this study)
+
+FastqFileName=''
+OutFileName=''
+
+mkdir OutFileName
+cd OutFileName
+
+bowtie2 -x $genome_files -p 4 -k 1 -U $FastqFileName | samtools view -bS - | samtools sort -@ 4 - $OutFileName.sorted
+bowtie2 -x $fly_genome -p 4 -k 1 -U $FastqFileName | samtools view -bS - | samtools sort -@ 4 - $OutFileName.sorted.dm3
+
+samtools index $OutFileName.sorted.bam
+samtools index $OutFileName.sorted.dm3.bam
+
+samtools rmdup -s $OutFileName.sorted.bam $fastq/rmdup/$OutFileName.sorted.rmdup.bam
+samtools rmdup -s $OutFileName.sorted.dm3.bam $fastq/rmdup/fly/$OutFileName.sorted.dm3.rmdup.bam
+
+samtools index $fastq/rmdup/$OutFileName.sorted.rmdup.bam
+samtools index $fastq/rmdup/fly/$OutFileName.sorted.dm3.rmdup.bam
