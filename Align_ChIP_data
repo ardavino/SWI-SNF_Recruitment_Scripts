@@ -19,3 +19,12 @@ samtools rmdup -s $OutFileName.sorted.dm3.bam $fastq/rmdup/fly/$OutFileName.sort
 
 samtools index $fastq/rmdup/$OutFileName.sorted.rmdup.bam
 samtools index $fastq/rmdup/fly/$OutFileName.sorted.dm3.rmdup.bam
+
+macs2 callpeak -t $OutFileName.sorted.rmdup.bam -g hs -n $OutFileName -q 1e-3 -f BAM --nomodel -B --SPMR --outdir $OutFileName
+bedtools sort -i $OutFileName_treat_pileup.bdg > $OutFileName.sort.bdg
+
+wget https://genome.ucsc.edu/goldenpath/help/hg19.chrom.sizes
+wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/bedGraphToBigWig
+chmod 775 bedGraphToBigWig
+
+bedGraphToBigWig $OutFileName.sort.bdg hg19.chrom.sizes $OutFileName.bw
